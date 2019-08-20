@@ -1,6 +1,6 @@
 {
-  "name": "create-mvvm-element-app",
-  "version": "1.0.0",
+  "name": "asd",
+  "version": "1.0.1",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -15,5 +15,13 @@
     "mvvm-element": "^1.0.11"
   },
   "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/niannings/create-mvvm-element-app.git"
+  },
+  "bugs": {
+    "url": "https://github.com/niannings/create-mvvm-element-app/issues"
+  },
+  "homepage": "https://github.com/niannings/create-mvvm-element-app#readme",
   "description": ""
 }
