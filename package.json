@@ -1,0 +1,19 @@
+{
+  "name": "asd",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "create-mvvm-element-app": "./src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mvvm-element": "^1.0.11"
+  },
+  "devDependencies": {},
+  "description": ""
+}
