@@ -3,43 +3,54 @@ const readline = require('readline');
 const child_process = require('child_process')
 const fs = require('fs')
 const path = require('path')
-const { promiseify, mkdir } = require('./utils')
+const { promiseify, openBrowser } = require('./utils')
 
 const erroring = console.error
 
 const writeFile = promiseify(fs.writeFile)
 const exec = promiseify(child_process.exec)
+const isWin = process.platform === 'win32'
 
 async function handleInput(queue) {
-  const dependencies = ['mvvm-element'];
-  const [name] = queue
-  let pkg
-  let data
-  let root = process.cwd()
-  let dir = path.resolve(root, `${name}`)
+  const dependencies = ['mvvm-element', 'parcel-bundler'];
+  const [name] = queue;
+  let pkg;
+  let data;
+  let curDep = dependencies[0];
+  let root = process.cwd();
+  let dir = path.resolve(root, `${name}`);
 
   try {
-    await exec(`mkdir ${name};cd ${name};npm init -y;cp -r ${root}/src/template/* ${dir}`);
+    const pkgPath = path.join(dir, 'package.json');
+    let copyCommand = `${isWin ? 'xcopy' : 'cp -r'} ${path.join(root, 'src/template')} ${dir}`;
 
-    pkg = require(`${dir}/package.json`);
-    pkg.name = name
+    await exec(`mkdir ${name}`);
+    await exec(isWin ? `${copyCommand} /e` : copyCommand);
+
+    pkg = require(pkgPath);
+    pkg.name = name;
     data = new Uint8Array(Buffer.from(JSON.stringify(pkg, null, 2)));
 
-    await writeFile(`${dir}/package.json`, data);
+    await writeFile(pkgPath, data);
 
-    console.log('安装中...');
-    
-    for (let i = 0, len = dependencies.length; i < len; i++) {
-      await exec(`cd ${dir};npm i ${dependencies[i]}`)
+    process.stdout.write(`${curDep} 安装中...\n`);
+
+    while (curDep = dependencies.shift()) {
+      await exec(`cd ${dir} && npm i ${curDep}`);
+
+      process.stdout.write(`\x1b[00;44m OK \x1b[0m ${curDep} 安装成功\n${dependencies[0] ? `${dependencies[0]} 安装中...` : ''}\n`);
     }
   } catch (error) {
     erroring(error);
+    erroring(`[${dependencies.join(', ')}]安装失败！\n`);
+
     process.exit(0);
   }
 
+  process.stdout.write('安装完成: \x1b[00;44m http://localhost:1234');
 
-  console.log('安装完成！');
-  process.exit(0);
+  await exec(`cd ${dir} && npm start`);
+  openBrowser('http://localhost:1234');
 }
 
 (async () => {

@@ -1,5 +1,6 @@
 import mvvm, { register } from 'mvvm-element';
 import HelloWorld from './components/HelloWorld.js';
+import './assets/style/index.css';
 
 register('wlxm-hello-world', HelloWorld);
 

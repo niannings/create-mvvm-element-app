@@ -1,9 +1,11 @@
+const { exec } = require('child_process')
+
 /**
  * 解析Unix、BSD和GNU参数风格
  * @param {Array} argv 命令行参数数组
  * @returns
  */
-function parseArgv (argv) {
+function parseArgv(argv) {
   const max = argv.length
   const result = {
     _: []
@@ -50,14 +52,30 @@ function promiseify(fn) {
       if (err) {
         reject(err)
       }
-      
+
       resolve(res)
     })
   })
 }
 
 
-module.exports = { //在这里写上需要向外暴露的函数、变量
+function openBrowser(url) {
+  // 拿到当前系统的参数
+  switch (process.platform) {
+    //mac系统使用 一下命令打开url在浏览器
+    case "darwin":
+      exec(`open ${url}`);
+    //win系统使用 一下命令打开url在浏览器
+    case "win32":
+      exec(`start ${url}`);
+    // 默认mac系统
+    default:
+      exec(`open ${url}`);
+  }
+}
+
+module.exports = {
   parseArgv,
-  promiseify
+  promiseify,
+  openBrowser
 }
